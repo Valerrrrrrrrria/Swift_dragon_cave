@@ -13,7 +13,8 @@ class ReusableHeader: UIView {
     let nibName = "Header"
     var contentView:UIView?
     var selectedIndex: String = ""
-    var viewController: ViewController = ViewController()
+    var currentDate = Date()
+    var vc : ViewController?
    
     @IBOutlet weak var winText: UILabel!
     @IBOutlet weak var segmentControl: UISegmentedControl! {
@@ -24,28 +25,25 @@ class ReusableHeader: UIView {
     
     @IBAction func indexChanged(_ sender: Any) {
         
-        switch segmentControl.selectedSegmentIndex {
-            case 0:
-                selectedIndex = "Football"
-                ViewController.sportIs = "football"
-                print(ViewController.sportIs)
-                print(ViewController.myDate)
-            case 1:
-                selectedIndex = "Hockey"
-                ViewController.sportIs = "hockey"
-                print(ViewController.myDate)
-                print(ViewController.sportIs)
-            case 2:
-                selectedIndex = "Basketball"
-                ViewController.sportIs = "basketball"
-                print(ViewController.myDate)
-                print(ViewController.sportIs)
-            default:
-                break
+        if let view = vc {
+            switch segmentControl.selectedSegmentIndex {
+                case 0:
+                    selectedIndex = "Football"
+                    view.sportIs  = "football"
+                    break
+                case 1:
+                    selectedIndex = "Hockey"
+                    view.sportIs  = "hockey"
+                    break
+                case 2:
+                    selectedIndex = "Basketball"
+                    view.sportIs  = "basketball"
+                    break
+                default:
+                    break
+            }
         }
-        viewController.displayUrl(date: ViewController.myDate, sport: ViewController.sportIs)
     }
-    
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -82,6 +80,10 @@ class ReusableHeader: UIView {
          return nib.instantiate(withOwner: self, options: nil).first as? UIView
      }
     
+    func setActiveViewController(vc : ViewController) {
+        self.vc = vc
+    }
+    
     
 
     /*
@@ -113,3 +115,9 @@ extension UISegmentedControl
         setTitleTextAttributes(selectedAttributes, for: .selected)
     }
 }
+
+var awesomeHeader = ReusableHeader( frame :
+    CGRect(
+        origin : CGPoint(x : 0, y : 0),
+        size : CGSize(width: UIScreen.main.bounds.width, height: 125)
+));

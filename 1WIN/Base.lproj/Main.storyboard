@@ -15,6 +15,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="813"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <color key="backgroundColor" cocoaTouchSystemColor="tableCellGroupedBackgroundColor"/>
+                        <accessibility key="accessibilityConfiguration" identifier="dayAfter"/>
                         <viewLayoutGuide key="safeArea" id="Jfl-Jn-WKh"/>
                     </view>
                     <tabBarItem key="tabBarItem" tag="1" title="Upcoming" image="square.and.pencil" catalog="system" id="mU9-6J-2ct"/>
@@ -33,6 +34,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="813"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <color key="backgroundColor" cocoaTouchSystemColor="tableCellGroupedBackgroundColor"/>
+                        <accessibility key="accessibilityConfiguration" identifier="dayBefore"/>
                         <viewLayoutGuide key="safeArea" id="0mN-7T-tsM"/>
                     </view>
                     <tabBarItem key="tabBarItem" tag="2" title="Recent" image="arrowtriangle.left" catalog="system" id="DXC-GF-Jwm"/>
@@ -50,6 +52,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="813"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <accessibility key="accessibilityConfiguration" identifier="today"/>
                         <viewLayoutGuide key="safeArea" id="IZ3-Ri-24W"/>
                     </view>
                     <tabBarItem key="tabBarItem" title="Today" image="checkmark" catalog="system" id="WD3-we-cRg"/>

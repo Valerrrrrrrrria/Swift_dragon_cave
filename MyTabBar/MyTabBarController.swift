@@ -10,8 +10,7 @@ import UIKit
 
 class MyTabBarController: UITabBarController, UITabBarControllerDelegate {
     var barItem: Int = -1;
-    var viewController: ViewController = ViewController()
-    var header = ReusableHeader()
+    
     static var isLoad = false
 
     override func viewDidLoad() {
@@ -24,72 +23,38 @@ class MyTabBarController: UITabBarController, UITabBarControllerDelegate {
     // UITabBarDelegate
     override func tabBar(_ tabBar: UITabBar, didSelect item: UITabBarItem) {
         barItem = item.tag
-        
-        print(item.tag)
-        
-        switch ViewController.sportIs {
-        case "football":
-            
-            for header: ReusableHeader in ViewController.headers {
-                header.changeSegment(segment: 0)
-            }
-            
-            break;
-
-        case "hockey":
-            
-            for header: ReusableHeader in ViewController.headers {
-                header.changeSegment(segment: 1)
-            }
-            
-            break;
-
-        case "basketball":
-            
-            for header: ReusableHeader in ViewController.headers {
-                header.changeSegment(segment: 2)
-            }
-            
-            break;
-            
-        default:
-            break;
-        }
-        
-        switch (item.tag) {
-        case 0:
-            ViewController.myDate = ViewController.today
-            print(ViewController.myDate)
-            print(ViewController.sportIs)
-            print("UPLOADING")
-            viewController.displayUrl(date: ViewController.today, sport: ViewController.sportIs)
-            
-            break
-        case 1:
-            ViewController.myDate = ViewController.dayAfter
-            print(ViewController.myDate)
-            print(ViewController.sportIs)
-            print("UPLOADING")
-            viewController.displayUrl(date: ViewController.dayAfter, sport: ViewController.sportIs)
-            
-            break
-        case 2:
-            ViewController.myDate = ViewController.dayBefore
-            print(ViewController.myDate)
-            print(ViewController.sportIs)
-            print("UPLOADING")
-            viewController.displayUrl(date: ViewController.dayBefore, sport: ViewController.sportIs)
-            
-            break
-        default:
-            break
-        }
-        
     }
 
     // UITabBarControllerDelegate
     func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
-        //print("Selected view controller")
+        if let vc = viewController as? ViewController {
+            
+            // Create Date
+            let date = Date()
+
+            // Create Date Formatter
+            let dateFormatter = DateFormatter()
+
+            // Set Date Format
+            dateFormatter.dateFormat = "YYYY-MM-dd"
+            
+            print ("MyTab:", date)
+            
+            switch barItem {
+            case 0:
+                vc.date = dateFormatter.string(from: date)
+                break
+            case 1:
+                vc.date = dateFormatter.string(from: date.dayAfter)
+                break
+            case 2:
+                vc.date = dateFormatter.string(from: date.dayBefore)
+                break;
+            default:
+                vc.date = dateFormatter.string(from : date)
+                break;
+            }
+        }
     }
     
     final func getBarItem() -> Int {
@@ -106,5 +71,4 @@ class MyTabBarController: UITabBarController, UITabBarControllerDelegate {
         // Pass the selected object to the new view controller.
     }
     */
-
 }

@@ -52,6 +52,8 @@ class TableViewCell: UITableViewCell {
     
     private let firstCommand: UITextView = {
         let iv = UITextView()
+        //iv.textContainer.lineBreakMode = .byTruncatingTail
+        //iv.textContainer.maximumNumberOfLines = 2
         iv.textColor = .black
         iv.textAlignment = .center
         iv.font = UIFont.systemFont(ofSize: 16, weight: .black)
@@ -61,6 +63,8 @@ class TableViewCell: UITableViewCell {
     
     private let secondCommand: UITextView = {
         let iv = UITextView()
+        //iv.textContainer.lineBreakMode = .byTruncatingTail
+        //iv.textContainer.maximumNumberOfLines = 2
         iv.textColor = .black
         iv.textAlignment = .center
         iv.font = UIFont.systemFont(ofSize: 16, weight: .black)

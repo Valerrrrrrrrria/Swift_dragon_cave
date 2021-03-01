@@ -13,23 +13,28 @@
 import UIKit
 import Kanna
 
+struct CachedMatches {
+    var matches = [Match] ()
+    var sport : String = ""
+    var date : String = ""
+    var cached = Date()
+}
+
 class ViewController: UIViewController {
     
-    var teams = [Team]()
+    static var teams = Set<Team>()
     var matches = [Match]()
-    static var headers = [ReusableHeader]()
-    static var tables = [UITableView]()
-    static var today = "", dayBefore = "", dayAfter = "", myDate = ""
-    static var sportIs = ""
+    
+    var sportIs : String = "football" {
+        didSet {
+            viewUpdated()
+        }
+    }
+    
+
+    var date : String = ""
+    
     var isLoad = false
-    
-    lazy var header: ReusableHeader = {
-        let header = ReusableHeader()
-        
-        header.translatesAutoresizingMaskIntoConstraints = false
-        return header
-    }()
-    
     var index: String = ""
     
     private lazy var indicator: UIActivityIndicatorView = {
@@ -39,39 +44,44 @@ class ViewController: UIViewController {
         
         return indicator
     }()
-        
+    
     private lazy var tableView: UITableView = {
-            let tableView = UITableView(frame: .zero, style: .plain)
-            tableView.backgroundColor = .darkGray
-            tableView.translatesAutoresizingMaskIntoConstraints = false
-            tableView.dataSource = self
-            tableView.delegate = self
-            tableView.register(TableViewCell.self, forCellReuseIdentifier: String(describing: TableViewCell.self))
-            
-            return tableView
-        }()
+        let tableView = UITableView(frame: .zero, style: .grouped)
+        tableView.backgroundColor = .darkGray
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+    
+        tableView.register(TableViewCell.self, forCellReuseIdentifier: String(describing: TableViewCell.self))
+        
+        return tableView
+    }()
+        
+    private var dataLoadTask : URLSessionDataTask?
+    private var dataLoadTaskIndx = 0
+    static private var dataLoadSession : URLSession {
+        let cfg = URLSessionConfiguration.default
+        return URLSession(configuration: cfg)
+    }
+    
+    static private var cachedData = [String: CachedMatches]()
     
     override func viewWillLayoutSubviews() {
-        
-        self.view.addSubview(header)
+        awesomeHeader.translatesAutoresizingMaskIntoConstraints = false
+        self.view.addSubview(awesomeHeader)
         self.view.addSubview(indicator)
-        
-        ViewController.headers.append(header)
-        print("count is \(ViewController.headers.count)")
-        
+                
         let constraints = [
-            header.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            header.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            header.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            header.heightAnchor.constraint(equalToConstant: 150)
+            awesomeHeader.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            awesomeHeader.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            awesomeHeader.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            awesomeHeader.heightAnchor.constraint(equalToConstant: 125)
         ]
         
         NSLayoutConstraint.activate(constraints)
     }
     
-    
     override func viewDidAppear(_ animated: Bool) {
-        tableView.reloadData()
+        super.viewDidAppear(animated)
+        viewUpdated()
     }
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -79,71 +89,96 @@ class ViewController: UIViewController {
         
         self.view.addSubview(indicator)
         
-        // Create Date
-        let date = Date()
-
-        // Create Date Formatter
-        let dateFormatter = DateFormatter()
-
-        // Set Date Format
-        dateFormatter.dateFormat = "YYYY-MM-dd"
-
-        // Convert Date to String
-        ViewController.today = dateFormatter.string(from: date)
-        ViewController.dayBefore = dateFormatter.string(from: date.dayBefore)
-        ViewController.dayAfter = dateFormatter.string(from: date.dayAfter)
-        
-        ViewController.sportIs = "football"
-        ViewController.myDate = ViewController.today
-        
-        
-        
-        if (!MyTabBarController.isLoad) {
-            displayUrl(date: ViewController.today, sport: ViewController.sportIs)
-            MyTabBarController.isLoad = true
-        }
-        
+        sportIs = "football"
     }
     
     func addTableView(){
     
+        tableView.dataSource = self
+        tableView.delegate   = self
+        tableView.backgroundColor = .darkGray
+        
+        tableView.reloadData()
+        
         view.addSubview(tableView)
-        ViewController.tables.append(tableView)
         
         let constraints = [
-            tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 150),
-            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0),
-            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0),
+            tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 115),
+            //tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 135),
+            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
             tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 0)
         
         ]
         
+        tableView.isHidden = false
+        
         NSLayoutConstraint.activate(constraints)
+    }
+    
+    func viewUpdated() {
+        if date == "" {
+            let df = DateFormatter()
+            df.dateFormat = "YYYY-MM-dd"
+            date = df.string(from : Date())
+        }
+        
+        if let task = dataLoadTask {
+            task.cancel()
+            URLSession.shared.finishTasksAndInvalidate();
+        }
+        
+        awesomeHeader.setActiveViewController(vc : self);
+        displayUrl(date : date, sport: sportIs)
     }
     
     func displayUrl(date: String, sport: String) {
         
         indicator.startAnimating()
         
-        teams.removeAll()
+        
+        dataLoadTaskIndx += 1
         matches.removeAll()
+        tableView.isHidden = true
         
         print("I GET DATE \(date) and sport \(sport)")
         
         let myURLAdress = "https://www.sports.ru/\(sport)/match/\(date)/"
         
+        if let cacheIndx = ViewController.cachedData.index(forKey: myURLAdress) {
+            let cache = ViewController.cachedData[cacheIndx]
+            
+            self.matches = cache.value.matches
+            self.indicator.stopAnimating()
+            self.addTableView()
+            
+            if cache.value.cached.timeIntervalSinceNow > 60*60 {
+                ViewController.cachedData.remove(at: cacheIndx)
+            }
+        }
+
         print("myURLAdress = https://www.sports.ru/\(sport)/match/\(date)/")
         
         // https://www.sports.ru/hockey/match/2021-02-18/
         // https://www.sports.ru/basketball/match/2021-02-18/
         
-        let myURL = URL(string: myURLAdress)
+        let myURL = URL(string : myURLAdress)
         
-        let session = URLSession.shared
-        let task = session.dataTask(with: myURL!) {
+        let taskIndx = dataLoadTaskIndx
+        dataLoadTask = URLSession.shared.dataTask(with: myURL!) {
+            [taskIndx, sportIs]
             myData, responce, error in
             
-            guard error == nil else {return}
+            guard error == nil else {
+                DispatchQueue.main.async {
+                    if taskIndx == self.dataLoadTaskIndx {
+                        self.indicator.stopAnimating()
+                    }
+                }
+                return;
+            }
+            
+            var matches = [Match] ()
             
             let myHTMLString = String(data: myData!, encoding: String.Encoding.utf8)
             
@@ -181,12 +216,37 @@ class ViewController: UIViewController {
                         
                         // Если объект Team с именем еще не создан, то создать и загрузить изображение
                         
-                        if !self.checkIfTeamExist(name: m.firstCommand) {
-                            self.displayHTMLForImage(name: m.firstCommand, url: m.firstCommandURL)
-                        }
+                        
+                        DispatchQueue.main.async {
+                            [m, sportIs] as [Any]
+                                                    
+                            var firstTeam = Team()
+                            firstTeam.name = m.firstCommand;
+                            firstTeam.sport = sportIs
+                            
+                            if !ViewController.teams.contains(firstTeam) {
+                                DispatchQueue.global(qos: .background).async {
+                                    self.displayHTMLForImage(
+                                        name: m.firstCommand
+                                        , url: m.firstCommandURL
+                                        , sport : sportIs
+                                    )
+                                }
+                            }
+                            
+                            var secondTeam = Team()
+                            secondTeam.name = m.secondCommand;
+                            secondTeam.sport = sportIs
 
-                        if !self.checkIfTeamExist(name: m.secondCommand) {
-                            self.displayHTMLForImage(name: m.secondCommand, url: m.secondCommandURL)
+                            if !ViewController.teams.contains(secondTeam) {
+                                DispatchQueue.global(qos : .background).async {
+                                    self.displayHTMLForImage(
+                                        name: m.secondCommand
+                                        , url: m.secondCommandURL
+                                        , sport : sportIs
+                                    )
+                                }
+                            }
                         }
                     
                         
@@ -195,7 +255,7 @@ class ViewController: UIViewController {
                     }
                     
                     if (m.status == "Не начался" || m.status == "Перенесен") {
-                        self.matches.append(m)
+                        matches.append(m)
                         continue;
                     }
                     
@@ -206,50 +266,42 @@ class ViewController: UIViewController {
                         break
                     }
                     
-                    self.matches.append(m)
+                    matches.append(m)
                 }
                 
                 // MARK: - Add Table View
                 
-                print(self.matches)
+                print(matches)
                 
                 DispatchQueue.main.async {
+                    if taskIndx == self.dataLoadTaskIndx {
+                        self.matches = matches
+                        self.indicator.stopAnimating()
+                        self.addTableView()
+                    }
                     
-                    self.indicator.stopAnimating()
-                    self.addTableView()
-                  
-                    
-                    //self.tableView.reloadData()
-                    //self.tableView.reloadSections(IndexSet(integersIn: 0...0), with: .automatic)
-                    
-                    
-                    //self.addTableView()
+                    if error == nil {
+                        ViewController.cachedData.updateValue(
+                            CachedMatches (
+                                matches: matches
+                                , sport: sportIs
+                                , date: date
+                                , cached: Date()
+                            )
+                            , forKey: myURLAdress)
+                    }
                 }
             }
         }
         
-        task.resume()
-        
+        if let task = dataLoadTask {
+            task.resume();
+        }
     }
     
-    func checkIfTeamExist(name: String) -> Bool {
-            
-            for element: Team in teams {
-                if element.name == name {
-                    
-                    return true
-                    
-                }
-            }
-           
-        return false
+    func displayHTMLForImage(name: String, url: String, sport : String) {
         
-    }
-    
-    func displayHTMLForImage(name: String, url: String) {
-        
-        var team = Team()
-        team.name = name
+
         //print("NAME IS \(name)")
         
         var imageURL = ""
@@ -258,24 +310,66 @@ class ViewController: UIViewController {
         
         let session = URLSession.shared
         let task = session.dataTask(with: myURL!) {
-            myData, responce, error in
+            myData, response, error in
             
-            guard error == nil else {return}
+            
+            guard error == nil else {
+                return
+            }
+            
+            var team = Team()
+                       team.name = name
             
             let myHTMLString = String(data: myData!, encoding: String.Encoding.utf8)
             
-            if let doc = try? HTML(html: myHTMLString!, encoding: String.Encoding.utf8) {
-                
-                let imIt = doc.xpath("//link[@rel='image_src']").makeIterator()
-                
-                if let first = imIt.next() {
-                    imageURL    = first["href"]  ?? "noURL"
-                    team.imgURL = imageURL
-                    team.image  = self.downloadImage(url: imageURL)
-                }
-                
-                self.teams.append(team)
-            }
+          
+                    if let doc = try? HTML(html: myHTMLString!, encoding: String.Encoding.utf8) {
+                        
+                        let imIt = doc.xpath("//link[@rel='image_src']").makeIterator()
+                        
+                        if let first = imIt.next() {
+                            if (first["href"] == "https://www.sports.ru/i/logo/facebook_app_logo_sports.png") {
+                                team.imgURL = "noURL"
+                                team.image  = UIImage(named: "load")
+                                team.sport  = sport
+                            } else {
+                                imageURL    = first["href"]  ?? "noURL"
+                                team.imgURL = imageURL
+                                team.image  = self.downloadImage(url: imageURL)
+                                team.sport  = sport
+                            }
+                        }
+                        
+                        DispatchQueue.main.async {
+                            [team]
+                            
+                            ViewController.teams.insert(team)
+
+                            var rows = [IndexPath]()
+                            
+                            for (i, m) in self.matches.enumerated() {
+                                if team.name == m.firstCommand {
+                                    rows.append(IndexPath(row : 0, section : i));
+                                }
+                                
+                                if team.name == m.secondCommand {
+                                    rows.append(IndexPath(row : 0, section : i));
+                                }
+                            }
+                            
+                           
+                            
+                            if !rows.isEmpty {
+                                self.tableView.beginUpdates()
+                                //self.tableView.reloadSections(rows, with: .none)
+                                self.tableView.reloadRows(at: rows, with: .none)
+                                self.tableView.endUpdates()
+                            }
+                            
+                        }
+                    }
+               
+            
          //print(self.teams)
         }
         
@@ -299,12 +393,9 @@ class ViewController: UIViewController {
         
             if let data = try? Data(contentsOf: myURL!) {
                 if let image = UIImage(data: data) {
-                    
-                        return image
-                    
+                    return image
                 }
             }
-        
         
         return nil
     }
@@ -314,16 +405,21 @@ extension ViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 270
-        
+    }
+    
+    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 270
     }
     
     func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-        return 20
+        return .zero
     }
     
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        //return CGFloat.leastNormalMagnitude
         return .zero
     }
+    
 }
 
 extension ViewController: UITableViewDataSource {
@@ -337,12 +433,10 @@ extension ViewController: UITableViewDataSource {
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        // return 10
         return matches.count
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        //return matches.count
         return 1
     }
     
@@ -352,26 +446,46 @@ extension ViewController: UITableViewDataSource {
         withIdentifier: String(describing: TableViewCell.self),
         for: indexPath) as! TableViewCell
         
-        cell.roundCornersWithRadius(45)
+        if matches.count < indexPath.section {
+            return cell
+        }
         
-        //cell.match = matchSection(firstImage: UIImage(named: "image"), secondImage: UIImage(named: "image"), firstCommand: "FirstCommand", secondCommand: "SecondCommand", date: "2021-02-24, 00:00:00")
-        //var firstImage: UIImage?
-        //var secondImage: UIImage?
+        let m = matches[indexPath.section];
         
-        //firstImage = findImage(by: matches[indexPath.section].firstCommand)
-        //secondImage = findImage(by: matches[indexPath.section].secondCommand)
+        var firstTeam = Team()
+        firstTeam.name = m.firstCommand;
+        firstTeam.sport = sportIs
         
-        cell.match = matchSection(firstImage: UIImage(named: "image"), secondImage: UIImage(named: "image"), firstScore: matches[indexPath.section].firstScore, secondScore: matches[indexPath.section].secondScore, firstCommand: matches[indexPath.section].firstCommand, secondCommand: matches[indexPath.section].secondCommand, date: "\(matches[indexPath.section].date), \(matches[indexPath.section].time)", status: matches[indexPath.section].status)
+        var firstImage = UIImage(named : "load")
+        if let indx = ViewController.teams.firstIndex(of: firstTeam) {
+            firstImage = ViewController.teams[indx].image ?? UIImage(named : "load")
+        }
+        
+        var secondTeam = Team()
+        secondTeam.name = m.secondCommand;
+        secondTeam.sport = sportIs
+        
+        var secondImage = UIImage(named : "load")
+        if let indx = ViewController.teams.firstIndex(of: secondTeam) {
+            secondImage = ViewController.teams[indx].image ?? UIImage(named : "load")
+        }
+        
+        cell.match = matchSection(
+            firstImage: firstImage
+            , secondImage: secondImage
+            , firstScore: matches[indexPath.section].firstScore
+            , secondScore: matches[indexPath.section].secondScore
+            , firstCommand: matches[indexPath.section].firstCommand
+            , secondCommand: matches[indexPath.section].secondCommand
+            , date: "\(matches[indexPath.section].date), \(matches[indexPath.section].time)"
+            , status: matches[indexPath.section].status)
+        
+        cell.backgroundColor = .white
+        cell.roundCornersWithRadius(45, top: true, bottom: true, shadowEnabled: true)
         
         return cell
     }
-    
-//    func findImage(by name: String) -> UIImage {
-//        for element: Team in teams {
-//            if element.name == name { return element.image! }
-//        }
-//        return UIImage(named: "image")!
-//    }
+
 }
 
 extension UIView {
@@ -429,3 +543,4 @@ extension Date {
         return dayAfter.month != month
     }
 }
+

@@ -15,14 +15,14 @@
         </placeholder>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
         <view contentMode="scaleToFill" id="iN0-l3-epB">
-            <rect key="frame" x="0.0" y="0.0" width="414" height="149"/>
+            <rect key="frame" x="0.0" y="0.0" width="414" height="125"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Mdj-lE-53p">
-                    <rect key="frame" x="0.0" y="0.0" width="414" height="100"/>
+                    <rect key="frame" x="0.0" y="0.0" width="414" height="75"/>
                     <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <constraints>
-                        <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="100" id="KEf-kq-jmw"/>
+                        <constraint firstAttribute="height" constant="75" id="JRi-jp-sxL"/>
                     </constraints>
                     <attributedString key="attributedText">
                         <fragment content="1WIN">
@@ -35,11 +35,11 @@
                     </attributedString>
                     <nil key="highlightedColor"/>
                 </label>
-                <segmentedControl opaque="NO" contentMode="scaleToFill" misplaced="YES" highlighted="YES" contentHorizontalAlignment="center" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="TYE-Oa-rJK">
-                    <rect key="frame" x="0.0" y="99" width="414" height="51"/>
+                <segmentedControl opaque="NO" contentMode="scaleToFill" highlighted="YES" contentHorizontalAlignment="center" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="TYE-Oa-rJK">
+                    <rect key="frame" x="0.0" y="75" width="414" height="51"/>
                     <color key="backgroundColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <constraints>
-                        <constraint firstAttribute="height" constant="50" id="I8i-m7-IZI"/>
+                        <constraint firstAttribute="height" constant="50" id="T2Q-7G-w1l"/>
                     </constraints>
                     <segments>
                         <segment title="Football"/>
@@ -58,12 +58,12 @@
                 <constraint firstItem="Mdj-lE-53p" firstAttribute="trailing" secondItem="vUN-kp-3ea" secondAttribute="trailing" id="3cb-Si-YGD"/>
                 <constraint firstItem="TYE-Oa-rJK" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" id="8EO-k3-Oej"/>
                 <constraint firstItem="Mdj-lE-53p" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="ZZ3-B5-Gyr"/>
-                <constraint firstItem="TYE-Oa-rJK" firstAttribute="top" secondItem="Mdj-lE-53p" secondAttribute="bottom" id="hpY-Ez-Khy"/>
-                <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="TYE-Oa-rJK" secondAttribute="trailing" id="jzl-pR-Upj"/>
+                <constraint firstItem="TYE-Oa-rJK" firstAttribute="top" secondItem="Mdj-lE-53p" secondAttribute="bottom" id="i6O-YQ-aut"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="TYE-Oa-rJK" secondAttribute="trailing" id="nl6-Ks-hJm"/>
             </constraints>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
             <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
-            <point key="canvasLocation" x="-10.144927536231885" y="-252.12053571428569"/>
+            <point key="canvasLocation" x="-10.144927536231885" y="-281.58482142857139"/>
         </view>
     </objects>
 </document>
