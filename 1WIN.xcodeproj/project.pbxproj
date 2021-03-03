@@ -11,6 +11,7 @@
 		380FFBF525E04B37007DD6FB /* Match.swift in Sources */ = {isa = PBXBuildFile; fileRef = 380FFBF425E04B37007DD6FB /* Match.swift */; };
 		380FFBF725E0FB79007DD6FB /* Team.swift in Sources */ = {isa = PBXBuildFile; fileRef = 380FFBF625E0FB79007DD6FB /* Team.swift */; };
 		380FFBFD25E659FE007DD6FB /* TableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 380FFBFC25E659FE007DD6FB /* TableViewCell.swift */; };
+		381EA50725EE3A0C001D44A4 /* PoliceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 381EA50625EE3A0C001D44A4 /* PoliceViewController.swift */; };
 		38E03B6825DE4D5E002DB64D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38E03B6725DE4D5E002DB64D /* AppDelegate.swift */; };
 		38E03B6A25DE4D5E002DB64D /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38E03B6925DE4D5E002DB64D /* SceneDelegate.swift */; };
 		38E03B6C25DE4D5E002DB64D /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38E03B6B25DE4D5E002DB64D /* ViewController.swift */; };
@@ -27,6 +28,7 @@
 		380FFBF425E04B37007DD6FB /* Match.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Match.swift; sourceTree = "<group>"; };
 		380FFBF625E0FB79007DD6FB /* Team.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Team.swift; sourceTree = "<group>"; };
 		380FFBFC25E659FE007DD6FB /* TableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableViewCell.swift; sourceTree = "<group>"; };
+		381EA50625EE3A0C001D44A4 /* PoliceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PoliceViewController.swift; sourceTree = "<group>"; };
 		38E03B6425DE4D5E002DB64D /* 1WIN.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = 1WIN.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		38E03B6725DE4D5E002DB64D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		38E03B6925DE4D5E002DB64D /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -38,7 +40,7 @@
 		38E03B7F25DE85C0002DB64D /* Header.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = Header.xib; sourceTree = "<group>"; };
 		38E03B8125DE8836002DB64D /* ReusableHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReusableHeader.swift; sourceTree = "<group>"; };
 		38E03B8925DFB3D7002DB64D /* MyTabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyTabBarController.swift; sourceTree = "<group>"; };
-		38E03B8C25DFDACF002DB64D /* Podfile */ = {isa = PBXFileReference; lastKnownFileType = text; path = Podfile; sourceTree = "<group>"; };
+		38E03B8C25DFDACF002DB64D /* Podfile */ = {isa = PBXFileReference; lastKnownFileType = text; path = Podfile; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -70,10 +72,19 @@
 			path = TableView;
 			sourceTree = "<group>";
 		};
+		381EA50325EE3952001D44A4 /* WebView */ = {
+			isa = PBXGroup;
+			children = (
+				381EA50625EE3A0C001D44A4 /* PoliceViewController.swift */,
+			);
+			path = WebView;
+			sourceTree = "<group>";
+		};
 		38E03B5B25DE4D5E002DB64D = {
 			isa = PBXGroup;
 			children = (
 				38E03B8C25DFDACF002DB64D /* Podfile */,
+				381EA50325EE3952001D44A4 /* WebView */,
 				380FFBFB25E659C2007DD6FB /* TableView */,
 				380FFBF125E04A4F007DD6FB /* Objects */,
 				38E03B8B25DFB47C002DB64D /* MyTabBar */,
@@ -129,9 +140,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 38E03B7825DE4D63002DB64D /* Build configuration list for PBXNativeTarget "1WIN" */;
 			buildPhases = (
+				60D62A6F149C844DB6CDDF5F /* [CP] Check Pods Manifest.lock */,
 				38E03B6025DE4D5E002DB64D /* Sources */,
 				38E03B6125DE4D5E002DB64D /* Frameworks */,
 				38E03B6225DE4D5E002DB64D /* Resources */,
+				6689A01685B6E044E410AC2F /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -196,6 +209,51 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		60D62A6F149C844DB6CDDF5F /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-1WIN-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		6689A01685B6E044E410AC2F /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 12;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-1WIN/Pods-1WIN-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-1WIN/Pods-1WIN-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "
+";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		38E03B6025DE4D5E002DB64D /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -203,6 +261,7 @@
 			files = (
 				38E03B6C25DE4D5E002DB64D /* ViewController.swift in Sources */,
 				380FFBFD25E659FE007DD6FB /* TableViewCell.swift in Sources */,
+				381EA50725EE3A0C001D44A4 /* PoliceViewController.swift in Sources */,
 				38E03B6825DE4D5E002DB64D /* AppDelegate.swift in Sources */,
 				380FFBF725E0FB79007DD6FB /* Team.swift in Sources */,
 				38E03B6A25DE4D5E002DB64D /* SceneDelegate.swift in Sources */,

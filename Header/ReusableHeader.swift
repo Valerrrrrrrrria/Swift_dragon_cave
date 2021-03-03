@@ -22,6 +22,17 @@ class ReusableHeader: UIView {
             segmentControl.defaultConfiguration()
         }
     }
+    @IBAction func privacyClicked(_ sender: Any) {
+        print("PRIVACY POLICY")
+        
+        
+        
+    }
+    
+    @IBAction func removeAdsClicked(_ sender: Any) {
+        print("REMOVE ADS")
+    }
+    
     
     @IBAction func indexChanged(_ sender: Any) {
         

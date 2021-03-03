@@ -12,6 +12,7 @@
 
 import UIKit
 import Kanna
+//import GoogleMobileAds
 
 struct CachedMatches {
     var matches = [Match] ()
@@ -37,11 +38,54 @@ class ViewController: UIViewController {
     var isLoad = false
     var index: String = ""
     
+    private lazy var adsImage: UIImageView = {
+        let img = UIImageView()
+        img.image = UIImage(named: "ban")
+        img.translatesAutoresizingMaskIntoConstraints = false
+        return img
+    }()
+    
+//    private lazy var bannerView: GADBannerView = {
+//       let banner = GADBannerView(adSize: kGADAdSizeBanner)
+//
+//        return banner
+//    }()
+    
+    private lazy var policyButton: UIButton = {
+        let btn = UIButton(type: .system)
+        btn.setTitle("Privacy Policy", for: .normal)
+        btn.setTitleColor(.darkGray, for: .normal)
+        btn.translatesAutoresizingMaskIntoConstraints = false
+        btn.addTarget(self, action: #selector(policyOnClick), for: .touchUpInside)
+        return btn
+    }()
+    
+    @objc func policyOnClick() {
+        print("PRIVACY POLICY")
+    
+        let storyBoard: UIStoryboard = UIStoryboard(name: "Main", bundle: nil)
+        let newViewController = storyBoard.instantiateViewController(withIdentifier: "policy") as! PoliceViewController
+                self.present(newViewController, animated: true, completion: nil)
+        
+    }
+    
+    private lazy var removeAdsButton: UIButton = {
+        let btn = UIButton(type: .system)
+        btn.setTitle("Remove Ads", for: .normal)
+        btn.setTitleColor(.darkGray, for: .normal)
+        btn.translatesAutoresizingMaskIntoConstraints = false
+        btn.addTarget(self, action: #selector(removeAdsOnClick), for: .touchUpInside)
+        return btn
+    }()
+    
+    @objc func removeAdsOnClick() {
+        print("REMOVE ADS")
+    }
+    
     private lazy var indicator: UIActivityIndicatorView = {
         let indicator = UIActivityIndicatorView(style: .large)
         indicator.center = view.center
         indicator.color = .white
-        
         return indicator
     }()
     
@@ -49,9 +93,7 @@ class ViewController: UIViewController {
         let tableView = UITableView(frame: .zero, style: .grouped)
         tableView.backgroundColor = .darkGray
         tableView.translatesAutoresizingMaskIntoConstraints = false
-    
         tableView.register(TableViewCell.self, forCellReuseIdentifier: String(describing: TableViewCell.self))
-        
         return tableView
     }()
         
@@ -68,16 +110,54 @@ class ViewController: UIViewController {
         awesomeHeader.translatesAutoresizingMaskIntoConstraints = false
         self.view.addSubview(awesomeHeader)
         self.view.addSubview(indicator)
+        self.view.addSubview(policyButton)
+        self.view.addSubview(removeAdsButton)
+        self.view.addSubview(adsImage)
                 
         let constraints = [
             awesomeHeader.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             awesomeHeader.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             awesomeHeader.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            awesomeHeader.heightAnchor.constraint(equalToConstant: 125)
+            awesomeHeader.heightAnchor.constraint(equalToConstant: 125),
+            
+            policyButton.topAnchor.constraint(equalTo: awesomeHeader.topAnchor, constant: 25),
+            policyButton.trailingAnchor.constraint(equalTo: awesomeHeader.trailingAnchor, constant: -10),
+            
+            removeAdsButton.topAnchor.constraint(equalTo: awesomeHeader.topAnchor, constant: 25),
+            removeAdsButton.leadingAnchor.constraint(equalTo: awesomeHeader.leadingAnchor, constant: 10),
+            
+            adsImage.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0),
+            adsImage.heightAnchor.constraint(equalToConstant: 150),
+            adsImage.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width)
+            
+            
         ]
         
         NSLayoutConstraint.activate(constraints)
+        
+        //addBannerViewToView(bannerView)
     }
+    
+//    func addBannerViewToView(_ bannerView: GADBannerView) {
+//     bannerView.translatesAutoresizingMaskIntoConstraints = false
+//     view.addSubview(bannerView)
+//     view.addConstraints(
+//       [NSLayoutConstraint(item: bannerView,
+//                           attribute: .bottom,
+//                           relatedBy: .equal,
+//                           toItem: view.safeAreaLayoutGuide.bottomAnchor,
+//                           attribute: .bottom,
+//                           multiplier: 1,
+//                           constant: 0),
+//        NSLayoutConstraint(item: bannerView,
+//                           attribute: .centerX,
+//                           relatedBy: .equal,
+//                           toItem: view,
+//                           attribute: .centerX,
+//                           multiplier: 1,
+//                           constant: 0)
+//       ])
+//    }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
@@ -103,11 +183,11 @@ class ViewController: UIViewController {
         view.addSubview(tableView)
         
         let constraints = [
-            tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 115),
+            tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 100),
             //tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 135),
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-            tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 0)
+            tableView.bottomAnchor.constraint(equalTo: adsImage.topAnchor, constant: 0)
         
         ]
         
@@ -187,7 +267,7 @@ class ViewController: UIViewController {
                 let ts     = doc.xpath("//td[@class='alLeft gray-text']").makeIterator()
                 let titles = doc.xpath("//div[@class='rel']").makeIterator()
                 let scores = doc.xpath("//span[@class='s-left'] | //span[@class='s-right']").makeIterator()
-                let imIt   = doc.xpath("//a[@class='player']").makeIterator()
+                let imIt   = doc.xpath("//div[@class='rel']").makeIterator()
                 
                 while true
                 {
@@ -211,9 +291,14 @@ class ViewController: UIViewController {
                     }
                     
                     if let first = imIt.next(), let second = imIt.next() {
-                        m.firstCommandURL  = first["href"]  ?? "unknown"
-                        m.secondCommandURL = second["href"] ?? "unknown"
+                        if let firstUrl =  first.at_xpath("//a[@class='player']") {
+                            m.firstCommandURL = firstUrl["href"] ?? "unknown"
+                        }
                         
+                        if let secondUrl =  second.at_xpath("//a[@class='player']") {
+                            m.secondCommandURL = secondUrl["href"] ?? "unknown"
+                        }
+
                         // Если объект Team с именем еще не создан, то создать и загрузить изображение
                         
                         
@@ -304,76 +389,80 @@ class ViewController: UIViewController {
 
         //print("NAME IS \(name)")
         
-        var imageURL = ""
-        
-        let myURL = URL(string: url)
-        
-        let session = URLSession.shared
-        let task = session.dataTask(with: myURL!) {
-            myData, response, error in
-            
-            
-            guard error == nil else {
-                return
-            }
-            
+        if (url.isEmpty || url == "unknown") {
             var team = Team()
-                       team.name = name
+            team.name = name
+            team.image = UIImage(named: "load")
+            team.sport = sport
+        } else {
+            var imageURL = ""
             
-            let myHTMLString = String(data: myData!, encoding: String.Encoding.utf8)
+            let myURL = URL(string: url)
             
-          
-                    if let doc = try? HTML(html: myHTMLString!, encoding: String.Encoding.utf8) {
-                        
-                        let imIt = doc.xpath("//link[@rel='image_src']").makeIterator()
-                        
-                        if let first = imIt.next() {
-                            if (first["href"] == "https://www.sports.ru/i/logo/facebook_app_logo_sports.png") {
-                                team.imgURL = "noURL"
-                                team.image  = UIImage(named: "load")
-                                team.sport  = sport
-                            } else {
-                                imageURL    = first["href"]  ?? "noURL"
-                                team.imgURL = imageURL
-                                team.image  = self.downloadImage(url: imageURL)
-                                team.sport  = sport
+            let session = URLSession.shared
+            let task = session.dataTask(with: myURL!) {
+                myData, response, error in
+                
+                
+                guard error == nil else {
+                    return
+                }
+                
+                var team = Team()
+                team.name = name
+                
+                let myHTMLString = String(data: myData!, encoding: String.Encoding.utf8)
+                
+              
+                        if let doc = try? HTML(html: myHTMLString!, encoding: String.Encoding.utf8) {
+                            
+                            let imIt = doc.xpath("//link[@rel='image_src']").makeIterator()
+                            
+                            if let first = imIt.next() {
+                                if (first["href"] == "https://www.sports.ru/i/logo/facebook_app_logo_sports.png") {
+                                    team.imgURL = "noURL"
+                                    team.image  = UIImage(named: "load")
+                                    team.sport  = sport
+                                } else {
+                                    imageURL    = first["href"]  ?? "noURL"
+                                    team.imgURL = imageURL
+                                    team.image  = self.downloadImage(url: imageURL)
+                                    team.sport  = sport
+                                }
                             }
-                        }
-                        
-                        DispatchQueue.main.async {
-                            [team]
                             
-                            ViewController.teams.insert(team)
+                            DispatchQueue.main.async {
+                                [team]
+                                
+                                ViewController.teams.insert(team)
 
-                            var rows = [IndexPath]()
-                            
-                            for (i, m) in self.matches.enumerated() {
-                                if team.name == m.firstCommand {
-                                    rows.append(IndexPath(row : 0, section : i));
+                                var rows = [IndexPath]()
+                                
+                                for (i, m) in self.matches.enumerated() {
+                                    if team.name == m.firstCommand {
+                                        rows.append(IndexPath(row : 0, section : i));
+                                    }
+                                    
+                                    if team.name == m.secondCommand {
+                                        rows.append(IndexPath(row : 0, section : i));
+                                    }
                                 }
                                 
-                                if team.name == m.secondCommand {
-                                    rows.append(IndexPath(row : 0, section : i));
+                                if !rows.isEmpty {
+                                    self.tableView.beginUpdates()
+                                    //self.tableView.reloadSections(rows, with: .none)
+                                    self.tableView.reloadRows(at: rows, with: .none)
+                                    self.tableView.endUpdates()
                                 }
                             }
-                            
-                           
-                            
-                            if !rows.isEmpty {
-                                self.tableView.beginUpdates()
-                                //self.tableView.reloadSections(rows, with: .none)
-                                self.tableView.reloadRows(at: rows, with: .none)
-                                self.tableView.endUpdates()
-                            }
-                            
                         }
-                    }
-               
+                   
+                
+             //print(self.teams)
+            }
             
-         //print(self.teams)
+            task.resume()
         }
-        
-        task.resume()
     
     }
     
@@ -404,12 +493,11 @@ class ViewController: UIViewController {
 extension ViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 270
+        return 250
     }
     
     func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 270
-    }
+        return 250    }
     
     func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
         return .zero

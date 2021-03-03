@@ -26,7 +26,12 @@ class TableViewCell: UITableViewCell {
         didSet {
             firstImage.image = match?.firstImage
             secondImage.image = match?.secondImage
-            score.text = "\(match!.firstScore ?? "") : \(match!.secondScore ?? "")"
+            if match?.firstScore != "", match?.secondScore != "" {
+                score.text = "\(match!.firstScore) : \(match!.secondScore)"
+            } else {
+                score.text = ""
+            }
+            
             firstCommand.text = match?.firstCommand
             secondCommand.text = match?.secondCommand
             date.text = match?.date
@@ -56,7 +61,7 @@ class TableViewCell: UITableViewCell {
         //iv.textContainer.maximumNumberOfLines = 2
         iv.textColor = .black
         iv.textAlignment = .center
-        iv.font = UIFont.systemFont(ofSize: 16, weight: .black)
+        iv.font = UIFont.systemFont(ofSize: 15, weight: .black)
         iv.translatesAutoresizingMaskIntoConstraints = false
         return iv
     }()
@@ -67,7 +72,7 @@ class TableViewCell: UITableViewCell {
         //iv.textContainer.maximumNumberOfLines = 2
         iv.textColor = .black
         iv.textAlignment = .center
-        iv.font = UIFont.systemFont(ofSize: 16, weight: .black)
+        iv.font = UIFont.systemFont(ofSize: 15, weight: .black)
         iv.translatesAutoresizingMaskIntoConstraints = false
         return iv
     }()
@@ -76,7 +81,7 @@ class TableViewCell: UITableViewCell {
         let iv = UITextView()
         iv.textColor = .darkGray
         iv.textAlignment = .center
-        iv.font = UIFont.systemFont(ofSize: 16, weight: .bold)
+        iv.font = UIFont.systemFont(ofSize: 16, weight: .black)
         iv.translatesAutoresizingMaskIntoConstraints = false
         return iv
     }()
